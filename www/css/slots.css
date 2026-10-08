@@ -1,0 +1,48 @@
+    .slot {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        padding: 9px;
+        border: 2px solid var(--bd);
+        border-radius: 12px;
+        margin-top: 7px
+    }
+
+    .slot.empty {
+        border-style: dashed;
+        opacity: .7
+    }
+
+    .sl-n {
+        font: 700 13px Georgia, serif;
+        color: var(--ac);
+        min-width: 44px;
+        text-align: center
+    }
+
+    .slot button {
+        min-height: 38px;
+        padding: 6px 10px
+    }
+
+    .slot .del.ask {
+        background: var(--ac);
+        color: #fff;
+        border-color: var(--ac)
+    }
+
+    #app[data-step=title] #mapbox,
+    #app[data-step=party] #mapbox {
+        display: none
+    }
+
+    #app[data-step=title] #side,
+    #app[data-step=party] #side {
+        flex: 0 1 560px;
+        width: 100%;
+        margin: 0 auto
+    }
+
+    #app[data-step=title] .hero h1 {
+        font-size: 34px
+    }

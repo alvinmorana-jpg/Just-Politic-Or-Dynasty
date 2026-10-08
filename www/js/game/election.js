@@ -1,0 +1,4 @@
+        function election() {
+            const base = () => S.hap * .45 + S.sup * .3 + S.int * .15 + S.seats[S.party] * .15 + cl((50 - rank()) / 6, -6, 6), run = sp => s => { s.gold -= sp; const sc = base() + sp / 15 + (S.sys ? SY[S.party].eb : 0) + Math.random() * 16 - 8; if (sc >= 44) { s.sup = cl(s.sup + 8); s.hap += 3; shift(6); return '🗳️ You WON re-election! (' + Math.round(sc) + ' pts). Your party gains seats.' } s.over = 1; s.msg = '🗳️ You lost the election (' + Math.round(sc) + ' pts) and your term ends. Final rank: #' + rank() + '.'; return 'You lost the election.' };
+            return { t: (S.sys ? SY[S.party].et : '🗳️ Election Day! Voters decide if you keep your seat.') + ' Happiness, approval, integrity, your party\'s council seats and your ranking all count.', o: [['Run on your record', run(0)], ['Ad campaign (−60 gold, +4 pts)', run(60), 60], ['Big rally (−120 gold, +8 pts)', run(120), 120]] }
+        }

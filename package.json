@@ -1,0 +1,22 @@
+{
+  "name": "province-governor",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Province Governor – Philippines (Capacitor Android wrapper)",
+  "scripts": {
+    "check": "node tools/check-modules.js",
+    "android:add": "npx cap add android",
+    "icons": "npx capacitor-assets generate --android",
+    "sync": "npx cap sync android",
+    "apk": "cd android && ./gradlew assembleDebug",
+    "open": "npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/core": "^6.2.0"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^6.2.0"
+  }
+}

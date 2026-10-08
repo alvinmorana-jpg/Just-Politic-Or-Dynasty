@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="theme-color" content="#c0392b">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <title>Province Governor – Philippines</title>
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/map.css">
+    <link rel="stylesheet" href="css/panels.css">
+    <link rel="stylesheet" href="css/controls.css">
+    <link rel="stylesheet" href="css/boot.css">
+    <link rel="stylesheet" href="css/slots.css">
+</head>
+
+<body>
+    <div id="boot" role="status" aria-live="polite">
+        <div class="bt"><svg class="sun" viewBox="-50 -50 100 100" width="84" height="84" aria-hidden="true">
+                <g class="rays" stroke="var(--gd)" stroke-width="5" stroke-linecap="round">
+                    <line x1="0" y1="-27" x2="0" y2="-43" transform="rotate(0)" />
+                    <line x1="0" y1="-27" x2="0" y2="-43" transform="rotate(45)" />
+                    <line x1="0" y1="-27" x2="0" y2="-43" transform="rotate(90)" />
+                    <line x1="0" y1="-27" x2="0" y2="-43" transform="rotate(135)" />
+                    <line x1="0" y1="-27" x2="0" y2="-43" transform="rotate(180)" />
+                    <line x1="0" y1="-27" x2="0" y2="-43" transform="rotate(225)" />
+                    <line x1="0" y1="-27" x2="0" y2="-43" transform="rotate(270)" />
+                    <line x1="0" y1="-27" x2="0" y2="-43" transform="rotate(315)" />
+                </g>
+                <circle r="17" fill="var(--gd)" />
+            </svg>
+            <h1>Province Governor</h1>
+            <div class="ov">Philippines · 81 provinces</div>
+            <div class="bl2"><i id="bpi"></i></div>
+            <div id="bst">Starting up…</div><small id="btip"></small>
+        </div>
+    </div>
+    <div id="app" inert>
+        <div id="mapbox"><svg id="map" viewBox="0 0 100 100"></svg>
+            <div id="night"></div>
+            <div id="zc"><button id="zi">+</button><button id="zo">−</button><button id="zr">⟲</button></div>
+            <div id="lg"><span>Low</span><i></i><span>High dev</span></div>
+        </div>
+        <div id="side"></div>
+    </div>
+    <div id="toast"></div>
+    <script src="js/data/map.js"></script>
+    <script src="js/data/content.js"></script>
+    <script src="js/data/events.js"></script>
+    <script src="js/core/state.js"></script>
+    <script src="js/data/parties.js"></script>
+    <script src="js/game/forces.js"></script>
+    <script src="js/data/policies.js"></script>
+    <script src="js/game/politics.js"></script>
+    <script src="js/game/cities.js"></script>
+    <script src="js/game/promotion.js"></script>
+    <script src="js/core/helpers.js"></script>
+    <script src="js/game/economy.js"></script>
+    <script src="js/game/laws.js"></script>
+    <script src="js/core/utils.js"></script>
+    <script src="js/core/save.js"></script>
+    <script src="js/game/actions.js"></script>
+    <script src="js/game/election.js"></script>
+    <script src="js/game/tick.js"></script>
+    <script src="js/ui/panels.js"></script>
+    <script src="js/ui/menu.js"></script>
+    <script src="js/ui/map.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>
