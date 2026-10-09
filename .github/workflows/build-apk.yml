@@ -16,12 +16,42 @@ jobs:
         with: { distribution: temurin, java-version: 17 }
       - run: npm install
       - run: node tools/check-modules.js
+
+      # Always rebuild www from the real game files, and stamp this build's number into it.
+      # (The in-app updater compares this number with the latest GitHub Release.)
+      - name: Prepare web files and stamp build number
+        run: |
+          rm -rf www && mkdir www
+          cp -r index.html css js assets manifest.webmanifest www/
+          echo "{\"version\":\"build-${{ github.run_number }}\",\"build\":${{ github.run_number }}}" > www/version.json
+
       - run: npx cap add android
         if: ${{ hashFiles('android/gradlew') == '' }}
+
+      # Android only installs an update over the old app if versionCode keeps going up.
+      - name: Set versionCode / versionName from the run number
+        run: |
+          sed -i -E "s/versionCode [0-9]+/versionCode ${{ github.run_number }}/; s/versionName \"[^\"]*\"/versionName \"build-${{ github.run_number }}\"/" android/app/build.gradle
+          grep -n "versionCode\|versionName" android/app/build.gradle
+
       - name: Generate app icons (optional)
         run: npx capacitor-assets generate --android
         continue-on-error: true
       - run: npx cap sync android
+
+      # Android only installs an update over the old app if it is signed with the SAME key.
+      # A fresh runner makes a new random debug key every time, so we restore a fixed one.
+      - name: Use the fixed signing key
+        env:
+          KS: ${{ secrets.DEBUG_KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$KS" ]; then
+            echo "::warning::DEBUG_KEYSTORE_BASE64 secret is missing - this APK cannot update over older installs."
+          else
+            mkdir -p ~/.android
+            echo "$KS" | base64 -d > ~/.android/debug.keystore
+          fi
+
       - run: chmod +x gradlew && ./gradlew assembleDebug
         working-directory: android
       - run: cp android/app/build/outputs/apk/debug/app-debug.apk ProvinceGovernor.apk
