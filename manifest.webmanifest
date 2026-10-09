@@ -1,0 +1,15 @@
+{
+  "name": "President or Rebel",
+  "short_name": "Pres or Rebel",
+  "description": "Province Governor – lead a province, climb to power.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#0f141a",
+  "theme_color": "#c0392b",
+  "icons": [
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
