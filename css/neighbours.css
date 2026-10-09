@@ -1,0 +1,15 @@
+    /* Neighbouring countries: greyed-out land drawn at its real-life position (not clickable) */
+    :root { --nb: #c9cdcc; --nbs: #8c9396 }
+    @media(prefers-color-scheme:dark) { :root:not([data-theme=light]) { --nb: #2a343b; --nbs: #5a656e } }
+    :root[data-theme=dark] { --nb: #2a343b; --nbs: #5a656e }
+    #map path.nb { fill: var(--nb); stroke: var(--nbs); stroke-opacity: .55; stroke-width: calc(1px*var(--z, 1)); pointer-events: none; cursor: inherit }
+    #nbo path.nb { pointer-events: auto }
+    #map path.nb:hover { filter: none }
+    #map.dipl path.nb { pointer-events: auto; cursor: pointer }
+    #map.dipl path.nb:hover { filter: brightness(1.15) }
+    #map.dipl text.nbl { pointer-events: auto; cursor: pointer; opacity: .8 }
+    table.rt { width: 100%; border-collapse: collapse; font-size: 12.5px; margin: 6px 0 }
+    table.rt th { text-align: left; font-weight: 600; opacity: .7; padding: 3px 4px }
+    table.rt td { padding: 3px 4px; border-top: 1px solid var(--bd) }
+    details > summary { cursor: pointer }
+    #map text.nbl { fill: var(--fg); opacity: .5; stroke: none; font-size: calc(40px*var(--z, 1)); letter-spacing: .14em; font-weight: 700 }

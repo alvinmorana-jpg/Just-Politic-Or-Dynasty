@@ -1,0 +1,109 @@
+    #boot {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: max(20px, env(safe-area-inset-top)) 20px max(20px, env(safe-area-inset-bottom));
+        background: radial-gradient(circle at 50% 35%, var(--card), var(--bg) 70%);
+        text-align: center;
+        transition: opacity .5s ease, visibility .5s
+    }
+
+    #boot.done {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none
+    }
+
+    .bt {
+        width: min(360px, 100%)
+    }
+
+    .bt .sun {
+        display: block;
+        margin: 0 auto 14px
+    }
+
+    .bt .rays {
+        animation: spin 14s linear infinite;
+        transform-origin: 0 0
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg)
+        }
+    }
+
+    .bt h1 {
+        font-size: 30px
+    }
+
+    .bl2 {
+        height: 8px;
+        background: var(--bg2);
+        border-radius: 99px;
+        margin: 22px 0 10px;
+        overflow: hidden;
+        border: 1px solid var(--bd)
+    }
+
+    .bl2 i {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--ac2), var(--ac), var(--gd));
+        border-radius: 99px;
+        transition: width .35s ease
+    }
+
+    #bst {
+        font-weight: 600;
+        font-size: 14px;
+        min-height: 20px
+    }
+
+    #btip {
+        display: block;
+        margin-top: 16px;
+        min-height: 34px
+    }
+
+    @media(prefers-reduced-motion:reduce) {
+        .bt .rays {
+            animation: none
+        }
+
+        #boot {
+            transition: none
+        }
+
+        .bl2 i {
+            transition: none
+        }
+    }
+
+/* Game logo */
+.logo {
+    display: block;
+    margin: 0 auto 14px;
+    width: min(256px, 62vw);
+    height: auto;
+    filter: drop-shadow(0 6px 18px rgba(0, 0, 0, .45))
+}
+
+.logo-hero {
+    width: min(200px, 50vw);
+    margin: 4px auto 10px
+}
+
+.sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap
+}

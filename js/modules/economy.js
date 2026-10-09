@@ -1,0 +1,41 @@
+// Current ruling party of each province: fixed per province (seeded by country + name), so it is the same every time you click it.
+const rulingOf = v => { let h = 7; for (const ch of v.c + ':' + v.n) h = (h * 31 + ch.charCodeAt(0)) >>> 0; const ks = Object.keys(PT); return ks[h % ks.length] };
+const rulingHtml = v => { const k = rulingOf(v), p = PT[k]; return `<div class="row" style="margin:6px 0;gap:8px;align-items:center"><img class="lgo" style="width:26px;height:26px" src="${p.lg}" alt=""><div><small>Current ruling party</small><br><b style="color:${p.c}">${p.n}</b>${k == PARTY ? ' <small>(your party)</small>' : ''}<br><small>${p.d}</small></div></div>` };
+function build() { all = []; C[CTRY].pv.forEach(([n, r, pop, dev]) => all.push({ c: CTRY, n, r, pop, dev, d0: dev })) }
+const col = d => `hsl(${40 + d},${45 + d * .2}%,${88 - d * .5}%)`, cl = (v, a = 0, b = 100) => Math.max(a, Math.min(b, v)), rank = () => 1 + all.filter(v => v.dev > S.v.dev).length;
+const pt = () => PT[S.party];
+const fx = k => PR.reduce((a, p) => a + (S.prog[p.id] ? (p.fx[k] || 0) : 0), 0) + LW.reduce((a, l) => a + (S.law[l.id] ? (l.fx[k] || 0) : 0), 0) + CL.reduce((a, l) => a + (S.cl && S.cl[l.id] ? (S.cl[l.id] == 2 ? .5 : 1) * (l.fx[k] || 0) : 0), 0) + (S.mc || []).reduce((a, m) => a + (m.k == k && m.until > S.day ? m.v : 0), 0) + S.tr.reduce((a, t) => a + (TR[t][1][k] || 0), 0) + (pt().fx[k] || 0) + (S.sys ? (SY[S.party].fx[k] || 0) : 0) + (S.dyn && S.dt == S.lv && k == 'int' ? -.25 : 0) + Object.keys(S.spz || {}).reduce((a, id) => a + (SPZ[id] ? (SPZ[id][1][k] || 0) : 0), 0) + (S.pth ? (S.pth.aut ? ({ inc: .12, thr: -.25 }[k] || 0) : 0) + (S.pth.emb || 0) * ({ inc: .03, dev: 1 }[k] || 0) : 0);
+const pm = () => Math.min(4, .6 + S.pop / 6000), pc = p => Math.round(p.up * pm() * (pt().pd[p.id] || 1)), lc = l => { const r = rawAff(S.party, l); return Math.round(l.cost * pm() * (r > .7 ? .85 : r < .3 ? 1.25 : 1)) };
+const upkeep = () => (PR.reduce((a, p) => a + (S.prog[p.id] ? pc(p) : 0), 0) + fu() + dipUp()) * dfm('up'), cost = k => Math.round(B.find(x => x[0] == k)[4] * Math.pow(1.45, S.b[k]) * pm() * (pt().bd[k] || 1));
+
+const mrich = () => .6 + hs(S.v.n + 'ore') % 100 / 100 * .9, sb = () => Math.min(S.pop, 20000) / 50 * [1, 1.4, 2.2][S.lv || 0];
+const miInc = () => Math.round(sb() * .22 * S.b.mining * S.rs.min / 100 * mrich() * (S.law.env ? .7 : 1)), loInc = () => Math.round(sb() * .12 * S.b.logging * S.rs.log / 100 * (S.law.env ? .7 : 1));
+const LAB_MAX = 5, labLv = () => S.lab ? Math.min(LAB_MAX - 2, S.lab.u || 0) : 0, labCap = () => 2 + labLv(), labUpCost = () => Math.round(120 * pm() * Math.pow(1.6, labLv())), labAway = () => S.lab ? Object.values(S.lab.c).reduce((a, n) => a + n, 0) : 0, labHire = () => Math.round(30 * pm());
+const labRate = n => { const v = all.find(x => x.n == n); return 7 * pm() * (1.3 - (v ? v.dev : 50) / 100) * S.lab.dem[n] };
+const labInc = () => S.lab && !S.lv ? Math.round(S.lab.nb.reduce((a, n) => a + S.lab.c[n] * labRate(n), 0)) : 0, resInc = () => miInc() + loInc();
+function labUp() { const L = S.lab; if (!L || S.lv || S.over || labCap() >= LAB_MAX || S.gold < labUpCost()) return; S.gold -= labUpCost(); L.u = labLv() + 1; toast('👷 Labor Work upgraded: you can now send ' + labCap() + ' crews'); ui() }
+function mkLab() {
+    const r = mkr(S.v.n + 'labor'), ri = regOf(S.v.n); let pool = ri >= 0 ? all.filter(v => v !== S.v && RG[ri][1].split(',').includes(v.n)) : []; if (pool.length < 4) pool = pool.concat(all.filter(v => v !== S.v && !pool.includes(v)).sort((a, b) => hs(S.v.n + a.n) - hs(S.v.n + b.n)).slice(0, 4 - pool.length));
+    const nb = []; while (nb.length < 4 && pool.length) nb.push(pool.splice(Math.floor(r() * pool.length), 1)[0].n); const L = { nb, c: {}, dem: {} }; nb.forEach(n => { L.c[n] = 0; L.dem[n] = .8 + r() * .6 }); return L
+}
+function ens() { B.forEach(x => { if (S.b[x[0]] == null) S.b[x[0]] = 0 }); if (!S.spz) S.spz = {}; B.forEach(x => { if (S.b[x[0]] >= 4) S.spz[x[0]] = 1 }); if (!S.rs) S.rs = { min: 100, log: 100 }; if (!S.lab && !S.lv) S.lab = mkLab() }
+function econTick() {
+    const b = S.b, e = S.law.env ? 1 : 0; S.rs.min = cl(S.rs.min - .07 * b.mining * (e ? .6 : 1)); S.rs.log = cl(S.rs.log - .09 * b.logging * (e ? .6 : 1) + .03 + (e ? .04 : 0));
+    if (b.mining && S.rs.min < 20 && !S.w1) { S.w1 = 1; toast('⛏️ The ore reserves are almost exhausted!') } if (S.rs.min > 30) S.w1 = 0; if (b.logging && S.rs.log < 20 && !S.w2) { S.w2 = 1; toast('🪵 The forests are almost cleared!') } if (S.rs.log > 30) S.w2 = 0;
+    if (S.lab && !S.lv && S.day % 28 == 0) { S.lab.nb.forEach(n => S.lab.dem[n] = .6 + Math.random() * .9); const hi = S.lab.nb.find(n => S.lab.dem[n] >= 1.35); if (hi) S.log.unshift('👷 ' + hi + ' is short on workers: labor rent is high this month.') }
+}
+function labor(i, d) {
+    const L = S.lab; if (!L || S.lv) return; const n = L.nb[i]; if (d > 0) { if (S.gold < labHire() || labAway() >= labCap() || L.c[n] >= 3) return; S.gold -= labHire(); L.c[n]++; toast('👷 Work crew sent to ' + n) } else if (L.c[n] > 0) { L.c[n]--; toast('Crew called back from ' + n) } ui()
+}
+function econHtml() {
+    ens(); const st = Math.round(mrich() * 2), bar = (v, c) => `<div class="bar" style="margin:3px 0"><i style="width:${v}%;background:${c}"></i></div>`;
+    let h = `<div class="ov" style="margin-top:12px">Resource income</div><small>⛏️ Ore reserve ${Math.round(S.rs.min)}% · richness ${'★'.repeat(st)}${'☆'.repeat(3 - st)} · <b>+${money(miInc())}</b>/qtr</small>${bar(S.rs.min, 'var(--gd)')}<small>🪵 Forest ${Math.round(S.rs.log)}% · <b>+${money(loInc())}</b>/qtr</small>${bar(S.rs.log, 'var(--ok)')}<small>${S.law.env ? '✔ Regulated by the Environmental Code: −30% income, but less harm and slower depletion.' : '⚠ Unregulated: more income, but happiness and integrity suffer. The Environmental Code regulates it.'}</small>`;
+    h += `<div class="ov" style="margin-top:12px">👷 Labor Work Service</div>`;
+    if (S.lv || !S.lab) return h + '<small>Neighboring provinces rent your work crews while you govern a province.</small>';
+    h += `<small>Nearby provinces rent your work crews and pay you each quarter. Crews away: <b>${labAway()}/${labCap()}</b> (max ${LAB_MAX}; they lower local happiness a little). Sending a crew costs ${money(labHire())}. Total rent: <b>+${money(labInc())}</b>/qtr.</small><div class="it"><div style="flex:1">🏗️ <b>Labor Work</b> <span class="pips">${'●'.repeat(labCap())}${'○'.repeat(LAB_MAX - labCap())}</span><br><small>Starts with 2 crew slots. Each upgrade adds 1, up to ${LAB_MAX}.</small></div><button ${labCap() >= LAB_MAX || S.gold < labUpCost() ? 'disabled' : ''} onclick="labUp()">${labCap() >= LAB_MAX ? 'MAX' : '⬆ ' + money(labUpCost())}</button></div>`;
+    return h + S.lab.nb.map((n, i) => { const v = all.find(x => x.n == n), dm = S.lab.dem[n], c = S.lab.c[n]; return `<div class="it"><div style="flex:1">🏗️ <b>${n}</b> <span class="pips">${'●'.repeat(c) || '○'}</span><br><small>Demand: ${dm >= 1.2 ? '🔥 High' : dm >= .85 ? 'Normal' : '❄️ Low'} · ${money(Math.round(labRate(n)))}/crew/qtr · dev ${v ? v.dev : '?'}</small></div><button ${c ? '' : 'disabled'} onclick="labor(${i},-1)">−</button><button ${S.gold < labHire() || labAway() >= labCap() || c >= 3 ? 'disabled' : ''} onclick="labor(${i},1)">+</button></div>` }).join('')
+}
+const income = () => { ens(); const b = S.b, s = Math.min(S.pop, 20000) / 50; return Math.round(s * [1, 1.4, 2.2][S.lv || 0] * (.5 + .12 * b.factory + .08 * b.market + .05 * b.school) * (1 + .08 * b.road + newB()) * [.6, 1, 1.5][S.tax] * S.c.cm * (1 + fx('inc') + dipI()) * dfm('inc') * (1 - ctPen()) * (.85 + .15 * S.int / 100) * (1 - S.thr / 500)) + resInc() + labInc() };
+const ira = () => Math.round(Math.min(S.pop, 20000) / 50 * .4 * (1.5 - S.v.dev / 100) * DF[S.dif].ira);
+const newB = () => { const b = S.b, pw = (b.power || 0) > 0 ? 1 : .6; return .06 * (b.datacenter || 0) * pw + .02 * (b.power || 0) + .04 * (b.port || 0) + .05 * (b.resort || 0) + .03 * (b.university || 0) };
+const dev = () => { const b = S.b; return Math.min(100, Math.round(S.v.d0 + (b.farm + b.factory + b.market + b.school + b.hospital + b.road) * 2 + ((b.datacenter || 0) + (b.university || 0)) * 2 + ((b.port || 0) + (b.resort || 0)) + fx('dev') + (S.hap - 60) * .1)) };

@@ -1,0 +1,38 @@
+    /* Phone in portrait: ask the player to rotate to landscape */
+    #rotateGuard {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 2147483647;
+        background: #1c1a16;
+        color: #fff;
+        text-align: center;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 14px;
+        padding: 24px;
+        font-family: system-ui, sans-serif
+    }
+
+    #rotateGuard .ico {
+        font-size: 64px;
+        animation: rotHint 2s ease-in-out infinite
+    }
+
+    #rotateGuard b {
+        font-size: 20px
+    }
+
+    #rotateGuard span {
+        opacity: .75;
+        font-size: 14px;
+        max-width: 280px
+    }
+
+    @keyframes rotHint {
+        0%, 20% { transform: rotate(0) }
+        60%, 100% { transform: rotate(-90deg) }
+    }
+
+    html[data-device="phone"][data-orient="portrait"] #rotateGuard { display: flex }
